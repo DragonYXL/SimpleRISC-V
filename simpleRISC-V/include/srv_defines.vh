@@ -15,11 +15,12 @@
 `define SRV_DATA_BUS        31:0            // Data bus range
 
 // ----------------------------------------------------------------------------
-// Address Bus (word-addressed, 30-bit word address)
+// Address Bus
 // ----------------------------------------------------------------------------
 `define SRV_ADDR_W          32              // Full byte address width
-`define SRV_WORD_ADDR_W     30              // Word address width (addr[31:2])
-`define SRV_WORD_ADDR_BUS   29:0            // Word address bus range
+`define SRV_ADDR_BUS        31:0            // Byte address bus range
+`define SRV_WORD_ADDR_W     30              // Optional word address width (addr[31:2])
+`define SRV_WORD_ADDR_BUS   29:0            // Optional word address bus range
 
 // ----------------------------------------------------------------------------
 // Bus Topology Defaults

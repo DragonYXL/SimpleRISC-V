@@ -4,19 +4,20 @@
 // Description : Top-level bus interconnect. Instantiates the arbiter, master
 //               mux, address decoder, and slave mux to form a complete shared
 //               bus fabric.
-//               All sub-modules are parameterized; topology can be changed by
-//               overriding NUM_MASTERS / NUM_SLAVES at instantiation.
+//               Includes a transaction lock: when a master has started a
+//               transfer (as_n asserted) but the slave has not yet responded
+//               (rdy_n deasserted), the arbiter grant is held stable.
 // ============================================================================
 
-`default_nettype none
+`include "bus_defines.vh"
 
 module bus_top #(
-    parameter NUM_MASTERS = 4,                              // Number of bus masters
-    parameter NUM_SLAVES  = 8,                              // Number of bus slaves
-    parameter ADDR_W      = 30,                             // Word address width
-    parameter DATA_W      = 32,                             // Data width
-    parameter IDX_MSB     = 29,                             // Slave index MSB in addr
-    parameter IDX_LSB     = 27                              // Slave index LSB in addr
+    parameter NUM_MASTERS = `SRV_BUS_MASTER_NUM,            // Number of bus masters
+    parameter NUM_SLAVES  = `SRV_BUS_SLAVE_NUM,             // Number of bus slaves
+    parameter ADDR_W      = `SRV_BUS_ADDR_W,                // Byte address width
+    parameter DATA_W      = `SRV_BUS_DATA_W,                // Data width
+    parameter IDX_MSB     = `SRV_BUS_SLAVE_IDX_MSB,         // Slave index MSB in addr
+    parameter IDX_LSB     = `SRV_BUS_SLAVE_IDX_LSB          // Slave index LSB in addr
 ) (
     // Clock & Reset
     input  wire                              clk,           // System clock
@@ -43,6 +44,23 @@ module bus_top #(
 );
 
     // ========================================================================
+    // Transaction Lock
+    // ========================================================================
+    // When address strobe is active on the shared bus and the selected slave
+    // has not responded (rdy_n high), lock the arbiter to prevent grant
+    // switching mid-transaction.
+    reg bus_lock;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (~rst_n)
+            bus_lock <= 1'b0;
+        else if (~s_as_n && m_rdy_n)
+            bus_lock <= 1'b1;           // Slave not ready — hold grant
+        else
+            bus_lock <= 1'b0;           // Idle or slave responded — release
+    end
+
+    // ========================================================================
     // Bus Arbiter
     // ========================================================================
     bus_arbiter #(
@@ -51,6 +69,7 @@ module bus_top #(
         .clk    (clk),
         .rst_n  (rst_n),
         .req_n  (m_req_n),
+        .lock   (bus_lock),
         .grnt_n (m_grnt_n)
     );
 
@@ -82,6 +101,7 @@ module bus_top #(
         .IDX_MSB    (IDX_MSB),
         .IDX_LSB    (IDX_LSB)
     ) u_addr_dec (
+        .s_as_n (s_as_n),
         .s_addr (s_addr),
         .s_cs_n (s_cs_n)
     );
@@ -101,5 +121,3 @@ module bus_top #(
     );
 
 endmodule
-
-`default_nettype wire
