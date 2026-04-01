@@ -8,22 +8,22 @@
 // ============================================================================
 
 module bus_master_mux #(
-    parameter NUM_MASTERS = 4,                          // Number of bus masters
-    parameter ADDR_W      = 30,                         // Word address width
-    parameter DATA_W      = 32                          // Data width
-) (
-    // Per-master signals (active-low as_, grnt_n)
-    input  wire [NUM_MASTERS*ADDR_W-1:0] m_addr,       // Packed master addresses
-    input  wire [NUM_MASTERS-1:0]        m_as_n,        // Address strobe (active-low)
-    input  wire [NUM_MASTERS-1:0]        m_rw,          // Read(1) / Write(0)
-    input  wire [NUM_MASTERS*DATA_W-1:0] m_wr_data,     // Packed master write data
-    input  wire [NUM_MASTERS-1:0]        m_grnt_n,      // Grant (active-low)
-    // Shared slave-side bus
-    output reg  [ADDR_W-1:0]            s_addr,         // Slave address
-    output reg                          s_as_n,         // Address strobe (active-low)
-    output reg                          s_rw,           // Read / Write
-    output reg  [DATA_W-1:0]            s_wr_data       // Slave write data
-);
+        parameter NUM_MASTERS = 4,                          // Number of bus masters
+        parameter ADDR_W      = 30,                         // Word address width
+        parameter DATA_W      = 32                          // Data width
+    ) (
+        // Per-master signals (active-low as_, grnt_n)
+        input  wire [NUM_MASTERS*ADDR_W-1:0] m_addr,        // Packed master addresses
+        input  wire [NUM_MASTERS-1:0]        m_as_n,        // Address strobe (active-low)
+        input  wire [NUM_MASTERS-1:0]        m_rw,          // Read(1) / Write(0)
+        input  wire [NUM_MASTERS*DATA_W-1:0] m_wr_data,     // Packed master write data
+        input  wire [NUM_MASTERS-1:0]        m_grnt_n,      // Grant (active-low)
+        // Shared slave-side bus
+        output reg  [ADDR_W-1:0]            s_addr,         // Slave address
+        output reg                          s_as_n,         // Address strobe (active-low)
+        output reg                          s_rw,           // Read / Write
+        output reg  [DATA_W-1:0]            s_wr_data       // Slave write data
+    );
 
     integer i;
 
