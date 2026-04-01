@@ -1,0 +1,35 @@
+{signal: [
+  {name: 'clk',        wave: 'p...........'},
+  {},
+  ['Master 0\n(高优先级)',
+    {name: 'm0_req_n',  wave: '10...1......',  node: '.....C......'},
+    {name: 'm0_grnt_n', wave: '1.0...1.....',  node: '..A.........'}
+  ],
+  {},
+  ['Master 1\n(低优先级)',
+    {name: 'm1_req_n',  wave: '10........1.',  node: '..........F.'},
+    {name: 'm1_grnt_n', wave: '1.....0....1',  node: '......D.....'}
+  ],
+  {},
+  ['共享总线',
+    {name: 's_addr',    wave: 'x.3..x4...x.',  data: ['M0 Addr', 'M1 Addr']},
+    {name: 's_valid',   wave: '0.1..01...0.'},
+    {name: 's_cs_n[S0]',wave: '1.0..1......'},
+    {name: 's_cs_n[S1]',wave: '1.....0...1.'},
+    {name: 's_rw',      wave: 'x.=..x=...x.',  data: ['READ', 'READ']}
+  ],
+  {},
+  ['从属响应',
+    {name: 'm_rd_data', wave: 'x...3x...4x.',  data: ['M0 Data', 'M1 Data']},
+    {name: 'm_rdy_n',   wave: '1...01...01.',  node: '....B....E..'}
+  ]
+],
+  head: {text: '总线仲裁时序: M0 > M1 固定优先级, 寄存器授权'},
+  edge: [
+    'A-~>B M0事务(Slave延迟2拍)',
+    'B~>C M0采样后释放req',
+    'C~>D 仲裁切换至M1(1clk寄存器延迟)',
+    'D-~>E M1事务(Slave延迟3拍)',
+    'E~>F M1采样后释放req'
+  ]
+}

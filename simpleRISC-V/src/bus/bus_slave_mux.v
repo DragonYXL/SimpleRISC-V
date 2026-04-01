@@ -10,15 +10,15 @@
 `include "bus_defines.vh"
 
 module bus_slave_mux #(
-    parameter NUM_SLAVES = `SRV_BUS_SLAVE_NUM,         // Number of bus slaves
-    parameter DATA_W     = `SRV_BUS_DATA_W             // Data width
-) (
-    input  wire [NUM_SLAVES-1:0]          s_cs_n,       // Chip selects (active-low)
-    input  wire [NUM_SLAVES*DATA_W-1:0]   s_rd_data,    // Packed slave read data
-    input  wire [NUM_SLAVES-1:0]          s_rdy_n,      // Slave ready (active-low)
-    output reg  [DATA_W-1:0]             m_rd_data,     // Shared read-data bus
-    output reg                           m_rdy_n        // Shared ready signal (active-low)
-);
+        parameter NUM_SLAVES = `SRV_BUS_SLAVE_NUM,         // Number of bus slaves
+        parameter DATA_W     = `SRV_BUS_DATA_W             // Data width
+    ) (
+        input  wire [NUM_SLAVES-1:0]          s_cs_n,       // Chip selects (active-low)
+        input  wire [NUM_SLAVES*DATA_W-1:0]   s_rd_data,    // Packed slave read data
+        input  wire [NUM_SLAVES-1:0]          s_rdy_n,      // Slave ready (active-low)
+        output reg  [DATA_W-1:0]              m_rd_data,    // Shared read-data bus
+        output reg                            m_rdy_n       // Shared ready signal (active-low)
+    );
 
     // ========================================================================
     // Mux-Based Response Bus: only the selected slave drives the return path

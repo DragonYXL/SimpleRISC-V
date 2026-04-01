@@ -20,7 +20,6 @@ module bus_arbiter #(
         input  wire                     clk,            // System clock
         input  wire                     rst_n,          // Async reset, active-low
         input  wire [NUM_MASTERS-1:0]   req_n,          // Bus request (active-low)
-        input  wire                     lock,           // Hold current grant (active-high)
         output reg  [NUM_MASTERS-1:0]   grnt_n          // Bus grant   (active-low, registered)
     );
 
@@ -34,8 +33,8 @@ module bus_arbiter #(
 
     // Next-state combinational signals
     reg [OWNER_W-1:0]               next_owner;     // Next bus owner index
-    reg                             next_owned;     // Next owned flag
-    reg                             grant_found;    // First requester found flag
+    reg                             next_owned;     // Bus next cycle will have an owner
+    reg                             grant_found;    // First request of master found flag
 
     integer i;
 
@@ -46,13 +45,7 @@ module bus_arbiter #(
         next_owner  = owner;
         next_owned  = 1'b0;
         grant_found = 1'b0;
-
-        if (lock) begin
-            // Transaction in progress — hold current grant unconditionally
-            next_owner = owner;
-            next_owned = owned;
-        end
-        else if (owned && ~req_n[owner]) begin
+        if (owned && ~req_n[owner]) begin
             // Current owner keeps the bus until its request is released
             next_owner = owner;
             next_owned = 1'b1;

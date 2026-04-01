@@ -15,7 +15,7 @@ module bus_addr_dec #(
     parameter IDX_MSB     = `SRV_BUS_SLAVE_IDX_MSB,     // Slave index MSB in addr
     parameter IDX_LSB     = `SRV_BUS_SLAVE_IDX_LSB      // Slave index LSB in addr
 ) (
-    input  wire                    s_as_n,              // Address strobe (active-low)
+    input  wire                    s_valid,              // Transaction valid (active-high)
     input  wire [ADDR_W-1:0]       s_addr,              // Byte address from bus
     output reg  [NUM_SLAVES-1:0]   s_cs_n               // Chip selects (active-low)
 );
@@ -32,7 +32,7 @@ module bus_addr_dec #(
     // ========================================================================
     always @(*) begin
         s_cs_n = {NUM_SLAVES{1'b1}};                   // Default: all deselected
-        if (s_as_n == 1'b0) begin
+        if (s_valid) begin
             for (i = 0; i < NUM_SLAVES; i = i + 1) begin
                 if (slave_idx == i[IDX_W-1:0]) begin
                     s_cs_n[i] = 1'b0;                  // Assert chip-select

@@ -1,0 +1,29 @@
+{signal: [
+  {name: 'clk',       wave: 'p.........',                          node: '.A.......I'},
+  {},
+  ['仲裁信号',
+    {name: 'req_n',    wave: '10......1.',                          node: '.........H'},
+    {name: 'grnt_n',   wave: '1.0......1',                          node: '..B.......' }
+  ],
+  {},
+  ['总线主控的\n输出信号',
+    {name: 'addr',     wave: 'x.=.....x.',  data: ['读取目的地址'],  node: '..C.......' },
+    {name: 'cs_n',     wave: '1.0.....1.'},
+    {name: 'valid',    wave: '0.1.....0.'},
+    {name: 'rw',       wave: 'x.=.....x.',  data: ['READ']},
+    {name: 'wr_data',  wave: 'x.........'}
+  ],
+  {},
+  ['总线从属的\n输出信号',
+    {name: 'rd_data',  wave: 'x......=x.',  data: ['读取数据'],      node: '.......F..' },
+    {name: 'rdy_n',    wave: '1......01.',                           node: '.......G..' }
+  ]
+],
+  head: {text: '总线读操作时序'},
+  edge: [
+    'A~>B 仲裁延迟(1clk)',
+    'C~>F Slave处理延迟(不定)',
+    'G~>H Master采样后释放',
+    'H~>I 授权撤销(1clk)'
+  ]
+}
